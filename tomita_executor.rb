@@ -2,17 +2,14 @@ require 'unicode_utils'
 require 'json'
 
 class TomitaExecutor
-  COUNTRY_REGEX = /(?<=^\t\tCountry\s\=\s)(.*)(?=\s)/
+  LOCATION_REGEX = /(?<=^\t\tCountry\s\=\s)(.*)(?=\s)/
   TOMITA_PATH = './'
   TOMITA_EXECUTABLE = 'tomita-linux64'
   TOMITA_CONFIG = 'config.proto'
 
 
   def self.parse_output output
-    countries = output.scan(COUNTRY_REGEX).flatten.select{|x| UnicodeUtils.uppercase_char? x[0]}.uniq
-    {
-      countries: countries
-    }.to_json
+    locations = output.scan(LOCATION_REGEX).flatten.select{|x| UnicodeUtils.uppercase_char? x[0]}.uniq
   end
 
   def self.parse path

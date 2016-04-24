@@ -1,5 +1,9 @@
 require 'ruby-kafka'
 require 'json'
+load 'tomita_executor.rb'
+load 'neo_connector.rb'
+load 'places_analyzer.rb'
+
 
 class KafkaConsumer
   #TODO: config.yml
@@ -25,5 +29,21 @@ class KafkaConsumer
 
   def process_message message
     msg = JSON.parse(message.force_encoding 'utf-8')
+    if msg['body']
+      uuid = msg['uuid']
+      dir_name = 'tmp-' + uuid
+      file_name = dir_name + '/article.txt'
+      Dir.mkdir dir_name
+      File.open(file_name, 'w') do |file|
+        file.write msg['body']
+      end
+      tomita_results = TomitaExecutor.parse file_name
+      File.delete file_name
+      Dir.rmdir dir_name
+      tomita_results.each do |location|
+        parsed_location = PlacesAnalyzer.locate_place location
+        NeoConnector.create_location parsed_location
+      end
+    end
   end
 end
