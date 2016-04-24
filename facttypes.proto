@@ -1,0 +1,14 @@
+import "base.proto";           // описание protobuf-типов
+import "facttypes_base.proto"; // описание protobuf-типа NFactType.TFact
+
+message Place: NFactType.TFact
+{
+  optional string Country = 1;
+  optional string Region = 2;
+  optional string Subregion = 3;
+  optional string City = 4;
+  optional string District = 5;
+  optional string Street = 6;
+  optional string House = 7;
+  optional string Name = 8;
+}
