@@ -41,8 +41,16 @@ class KafkaConsumer
       File.delete file_name
       Dir.rmdir dir_name
       tomita_results.each do |location|
-        parsed_location = PlacesAnalyzer.locate_place location
-        NeoConnector.create_location parsed_location
+        location_uuid = NeoConnector.get_location_uuid location
+        unless location_uuid
+          parsed_location = PlacesAnalyzer.locate_place location
+          location_uuid = NeoConnector.create_location parsed_location
+          if location_uuid
+            NeoConnector.create_article_location_connection location_uuid, uuid
+          end
+        else
+          NeoConnector.create_article_location_connection location_uuid, uuid
+        end
       end
     end
   end

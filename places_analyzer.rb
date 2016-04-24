@@ -2,6 +2,7 @@ require 'geocoder'
 require 'json'
 require 'neography'
 
+
 class PlacesAnalyzer
   PLACES_TYPES = ['country', 'locality', 'administrative_area_level_1', 'administrative_area_level_2']
   def self.locate_place name
@@ -14,6 +15,7 @@ class PlacesAnalyzer
         neo_type = match_place_type(google_response_type)
         if neo_type.length > 0
           {
+            uuid: SecureRandom.uuid,
             name: name,
             lat: location['lat'],
             lng: location['lng'],
