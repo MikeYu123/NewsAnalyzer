@@ -1,8 +1,7 @@
 require 'ruby-kafka'
-require 'json'
-load 'tomita_executor.rb'
-load 'neo_connector.rb'
-load 'places_analyzer.rb'
+load File.expand_path('../tomita_executor.rb', __FILE__)
+load File.expand_path('../neo_connector.rb', __FILE__)
+load File.expand_path('../places_analyzer.rb', __FILE__)
 
 
 class KafkaConsumer
@@ -12,13 +11,15 @@ class KafkaConsumer
   attr_accessor :group_name
   attr_accessor :consumer
   attr_accessor :seeders
+
   def initialize args={}
     @seeders = ['localhost:9092']
     @topic_name = args[:topic_name]
     @group_name = args[:group_name]
     kafka = Kafka.new seed_brokers: @seeders
-    @consumer = kafka.consumer group_id: @group_name
-    @consumer.subscribe @topic_name
+    @consumer = kafka.consumer group_id: @group_name, offset_commit_interval: 5,
+    @consumer.subscribe(@topic_name)
+
   end
 
   def start_cycle
@@ -41,6 +42,7 @@ class KafkaConsumer
       File.delete file_name
       Dir.rmdir dir_name
       tomita_results.each do |location|
+        #IDEA: Cache unrecognized entities
         location_uuid = NeoConnector.get_location_uuid location
         unless location_uuid
           parsed_location = PlacesAnalyzer.locate_place location

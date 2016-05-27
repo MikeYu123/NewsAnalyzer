@@ -2,8 +2,9 @@ require 'unicode_utils'
 require 'json'
 
 class TomitaExecutor
+  #TODO: config.yml?/?
   LOCATION_REGEX = /(?<=^\t\tCountry\s\=\s)(.*)(?=\s)/
-  TOMITA_PATH = './'
+  TOMITA_PATH = '/home/mike/GradWork/AnalyzeNews'
   TOMITA_EXECUTABLE = 'tomita-linux64'
   TOMITA_CONFIG = 'config.proto'
 

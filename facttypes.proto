@@ -12,3 +12,8 @@ message Place: NFactType.TFact
   optional string House = 7;
   optional string Name = 8;
 }
+
+message Name: NFactType.TFact
+{
+  optional string Value = 1;
+}
