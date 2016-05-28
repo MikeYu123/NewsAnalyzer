@@ -2,3 +2,5 @@ tomita-linux64
 *.bin
 PrettyOutput*
 tmp-*
+*.yml
+*.txt

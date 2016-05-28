@@ -3,18 +3,11 @@ require 'json'
 
 class TomitaExecutor
   #TODO: config.yml?/?
-  LOCATION_REGEX = /(?<=^\t\tCountry\s\=\s)(.*)(?=\s)/
   TOMITA_PATH = '/home/mike/GradWork/AnalyzeNews'
   TOMITA_EXECUTABLE = 'tomita-linux64'
   TOMITA_CONFIG = 'config.proto'
 
-
-  def self.parse_output output
-    locations = output.scan(LOCATION_REGEX).flatten.select{|x| UnicodeUtils.uppercase_char? x[0]}.uniq
-  end
-
-  def self.parse path
-    output = `cd #{TOMITA_PATH} && ./#{TOMITA_EXECUTABLE} #{TOMITA_CONFIG} < #{path}`
-    parse_output output
+  def self.execute path
+    `cd #{TOMITA_PATH} && ./#{TOMITA_EXECUTABLE} #{TOMITA_CONFIG} < #{path}`
   end
 end

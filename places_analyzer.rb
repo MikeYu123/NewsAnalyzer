@@ -1,37 +1,26 @@
 require 'geocoder'
 require 'json'
 require 'neography'
+require 'yaml'
+require 'set'
+
+# Config.yml
+Geocoder.configure(always_raise: [Geocoder::OverQueryLimitError])
+Geocoder.configure(language: :ru)
+Geocoder.configure(api_key: "AIzaSyBq7qgARXTDMAGCVWAiUDXzcTN4mU4B4FY")
 
 
 class PlacesAnalyzer
+  PLACES_PREFIXES = YAML.load_file(File.expand_path('../location_prefixes.yml',__FILE__))
+  PLACES_LOOKUP_SET = Set.new(PLACES_PREFIXES.flat_map{|k,v| v.flat_map{|k1, v1| v1}}.reduce(:merge).flat_map{|k, v| (v<<k)})
   PLACES_TYPES = ['country', 'locality', 'administrative_area_level_1', 'administrative_area_level_2']
   def self.locate_place name
-    google_response = Geocoder.search(name).first
-    if google_response
-      google_response_types = google_response.data['types'].select{|type| PLACES_TYPES.include? type}
-      if google_response_types.length > 0
-        google_response_type = google_response_types.first
-        location = google_response.data['geometry']['location']
-        neo_type = match_place_type(google_response_type)
-        if neo_type.length > 0
-          {
-            uuid: SecureRandom.uuid,
-            name: name,
-            lat: location['lat'],
-            lng: location['lng'],
-            type: neo_type
-          }
-        else
-          {
+    # Geocoder.
+  end
 
-          }
-        end
-      else
-        {}
-      end
-    else
-      {}
-    end
+  def self.normalize_prefix(prefix)
+    norms = PLACES_PREFIXES.flat_map{|k,v| v.flat_map{|k1, v1| v1}}.reduce(:merge)
+    norms.select{|k, v| (v<<k).include? prefix}.first.first
   end
 
   def self.match_place_type place_type
