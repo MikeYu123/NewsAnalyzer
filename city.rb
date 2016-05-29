@@ -1,20 +1,26 @@
 load File.expand_path('../neo_connector.rb', __FILE__)
 require 'securerandom'
 
-class Country
+class City
   attr_accessor :name
   attr_accessor :lat
   attr_accessor :lng
   attr_accessor :uuid
   attr_accessor :type
+  attr_accessor :region
+  attr_accessor :subregion
+  attr_accessor :country
   attr_accessor :encached
 
   def initialize params = {}
-    @type = 'Country'
+    @type = 'City'
     @name = params[:name]
     @lat = params[:lat]
     @lng = params[:lng]
     @uuid = params[:uuid] || SecureRandom.uuid
+    @country = params[:country]
+    @region = params[:region]
+    @subregion = params[:subregion]
     @encached = params[:encached] || false
   end
 
@@ -42,6 +48,15 @@ class Country
 
   def to_neo4j
     @uuid = NeoConnector.create_location(self.location_data)
+    if(@country && @country.encached)
+      NeoConnector.connect_city_and_country @uuid, @country.uuid
+    end
+    if(@region && @region.encached)
+      NeoConnector.connect_city_and_region @uuid, @region.uuid
+    end
+    if(@subregion && @subregion.encached)
+      NeoConnector.connect_city_and_subregion @uuid, @subregion.uuid
+    end
     @encached = true
     self
   end

@@ -4,3 +4,4 @@ PrettyOutput*
 tmp-*
 *.yml
 *.txt
+*.bak
